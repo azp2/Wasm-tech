@@ -1,0 +1,319 @@
+@view-transition { navigation: auto; }
+
+/* =========================================
+   1. إعدادات الصفحة والخطوط (مشترك)
+   ========================================= */
+body {
+  box-sizing: border-box;
+  font-family: 'Tajawal', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================
+   2. الوضع الداكن (الأساسي)
+   ========================================= */
+:root {
+  --bg-primary: #050A1F;
+  --accent-blue: #2E00E6;
+  --accent-turquoise: #00C7F4;
+  --text-white: #FFFFFF;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-white);
+}
+
+.gradient-bg {
+  background: linear-gradient(180deg, #050A1F 0%, #0A1628 50%, #050A1F 100%);
+}
+
+.circuit-pattern {
+  background-image: 
+    linear-gradient(rgba(0, 199, 244, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 199, 244, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* الكروت الزجاجية (Dark) */
+.card-glass {
+  background: rgba(10, 22, 40, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 199, 244, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* الأزرار */
+.btn-primary {
+  background: linear-gradient(135deg, #2E00E6 0%, #4A1FFF 100%);
+  color: #FFFFFF;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(46, 0, 230, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid #00C7F4;
+  color: #00C7F4;
+  transition: all 0.3s ease;
+}
+.btn-secondary:hover {
+  background: rgba(0, 199, 244, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(0, 199, 244, 0.3);
+}
+
+/* هوفر الخدمات (Dark) */
+.service-card {
+  transition: all 0.4s ease;
+}
+.service-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(0, 199, 244, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 199, 244, 0.2);
+}
+
+/* =========================================================
+   🚨 الحل الجذري لطول الكروت (Portfolio Cards) 🚨
+   ========================================================= */
+
+/* جعل حاوية المشاريع تستخدم Grid وتساوي ارتفاع العناصر */
+#portfolio-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    #portfolio-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* تصميم الكارت ليكون مرناً ويمتد لكامل الارتفاع */
+.portfolio-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;       /* يملأ ارتفاع الخلية في الـ Grid */
+    min-height: 450px;  /* 🟢 تحديد حد أدنى للارتفاع لضمان الحجم الكبير */
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.portfolio-card:hover {
+    transform: translateY(-5px);
+    border-color: #0084A1;
+    box-shadow: 0 15px 30px -5px rgba(0, 132, 161, 0.15);
+}
+
+/* تغليف الصورة بارتفاع ثابت */
+.portfolio-image-wrapper {
+    height: 250px;      /* ارتفاع ثابت للصورة */
+    flex-shrink: 0;     /* منع الصورة من الانكماش */
+    position: relative;
+    background-color: #111827;
+    overflow: hidden;
+}
+
+.portfolio-image-wrapper img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.portfolio-card:hover .portfolio-image-wrapper img {
+    transform: scale(1.1);
+}
+
+/* منطقة المحتوى: تتمدد لتملأ أي فراغ متبقي */
+.portfolio-content {
+    flex: 1;            /* ينمو ليملأ المساحة المتبقية */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* توزيع المحتوى (العنوان فوق، والتقنيات تحت) */
+    padding: 1.5rem;    /* p-6 */
+}
+
+
+/* الروابط */
+.nav-link { position: relative; transition: color 0.3s ease; }
+.nav-link::after {
+  content: ''; position: absolute; bottom: -4px; right: 0; width: 0; height: 2px;
+  background: #00C7F4; transition: width 0.3s ease;
+}
+.nav-link:hover::after { width: 100%; }
+
+/* Animation Utils */
+.glow-blue { box-shadow: 0 0 30px rgba(46, 0, 230, 0.5), 0 0 60px rgba(46, 0, 230, 0.3); }
+.text-glow-turquoise { text-shadow: 0 0 20px rgba(0, 199, 244, 0.8), 0 0 40px rgba(0, 199, 244, 0.4); }
+.floating { animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+.pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+@keyframes pulseGlow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+.code-line { animation: codeFade 4s ease-in-out infinite; }
+@keyframes codeFade { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.6; } }
+.scroll-smooth { scroll-behavior: smooth; }
+
+
+/* =========================================
+   3. الوضع النهاري (Light Mode)
+   ========================================= */
+
+/* الخلفية العامة */
+body.light-mode {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F3F4F6 50%, #E5E7EB 100%) !important;
+    background-image: none !important;
+    color: #111827 !important;
+}
+
+/* تنظيف الخلفيات الداكنة */
+body.light-mode section,
+body.light-mode main,
+body.light-mode div[class*="bg-[#050A1F]"] {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* الناف بار */
+body.light-mode nav {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+body.light-mode .nav-link,
+body.light-mode nav a:not(.btn-primary) {
+    color: #1f2937 !important;
+    font-weight: 500 !important;
+}
+body.light-mode .nav-link:hover {
+    color: #0084A1 !important;
+}
+
+/* الأكواد العائمة والزخارف */
+body.light-mode .code-line {
+    color: #1e40af !important;
+    opacity: 0.3 !important;
+    font-weight: 700 !important;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.05) !important;
+}
+
+body.light-mode .circuit-pattern {
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px) !important;
+    opacity: 1 !important;
+}
+
+/* ألوان النصوص الرئيسية */
+body.light-mode .text-cyan-400, 
+body.light-mode .text-cyan-500 { color: #0084A1 !important; }
+body.light-mode .text-blue-400,
+body.light-mode .text-blue-500,
+body.light-mode .text-blue-600 { color: #1e40af !important; }
+body.light-mode .text-purple-500 { color: #7e22ce !important; }
+body.light-mode .text-gray-300, 
+body.light-mode .text-gray-400, 
+body.light-mode .text-gray-500 { color: #4b5563 !important; }
+
+/* توحيد الكروت والبوكسات */
+body.light-mode .card-glass,
+body.light-mode .service-card,
+body.light-mode .portfolio-card,
+body.light-mode input,
+body.light-mode textarea {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05) !important;
+}
+/* إصلاح عنوان الهيرو */
+body.light-mode #hero-title .text-white {
+    color: #111827 !important;
+}
+
+/* إصلاح حاوية الكود في قسم "من نحن" */
+body.light-mode #about .card-glass .rounded-xl.font-mono {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05) !important;
+    color: #334155 !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+/* تعديل ألوان الـ Syntax Highlighting */
+body.light-mode #about code .text-purple-400 { color: #9333ea !important; font-weight: bold; }
+body.light-mode #about code .text-cyan-400   { color: #0891b2 !important; font-weight: bold; }
+body.light-mode #about code .text-green-400  { color: #166534 !important; }
+body.light-mode #about code .text-yellow-400 { color: #b45309 !important; }
+body.light-mode #about code .text-red-400    { color: #dc2626 !important; }
+body.light-mode #about code .text-blue-400   { color: #2563eb !important; }
+body.light-mode #about code .text-gray-300   { color: #475569 !important; }
+
+/* تأثيرات الهوفر (Hover) */
+body.light-mode .service-card:hover {
+    transform: translateY(-5px) !important;
+    border-color: #0084A1 !important;
+    box-shadow: 0 15px 30px -5px rgba(0, 132, 161, 0.15) !important;
+    background: #f8fafc !important;
+}
+
+body.light-mode .portfolio-card:hover {
+    transform: translateY(-5px) !important;
+    border-color: #0084A1 !important;
+    box-shadow: 0 15px 30px -5px rgba(0, 132, 161, 0.15) !important;
+    background: #f8fafc !important;
+}
+
+body.light-mode #submit-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 40px rgba(46, 0, 230, 0.25) !important;
+}
+
+/* نصوص داخل كروت المشاريع */
+body.light-mode .portfolio-card .p-6 h3 { color: #111827 !important; }
+body.light-mode .portfolio-card .p-6 p { color: #4B5563 !important; }
+
+/* إصلاحات النصوص العامة */
+body.light-mode h1, body.light-mode h2, body.light-mode h3, body.light-mode h4 {
+    color: #111827 !important;
+}
+
+body.light-mode input, body.light-mode textarea {
+    color: #111827 !important;
+    background-color: #f9fafb !important;
+}
+body.light-mode ::placeholder {
+    color: #9ca3af !important;
+}
+
+/* أيقونات السوشيال ميديا */
+body.light-mode a[href*="tiktok"] svg,
+body.light-mode a[href*="twitter"] svg,
+body.light-mode a[href*="linkedin"] svg {
+    color: #ffffff !important;
+}
+
+/* =========================================
+   إعدادات الخطوط حسب اللغة
+   ========================================= */
+
+/* العربية (الافتراضي) */
+body {
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* الإنجليزية */
+html[lang="en"] body {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+html[lang="en"] h1, 
+html[lang="en"] h2, 
+html[lang="en"] h3 {
+    font-weight: 800; /* تعويض سماكة خط تجوال */
+}
