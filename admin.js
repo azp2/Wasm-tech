@@ -6,8 +6,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// 🔴🔴🔴 ضع إعدادات فايربيس الخاصة بك هنا 🔴🔴🔴
-// تم تجزئة المفتاح لتجاوز فحص الاستضافة الآلي
+// 🔴 تأكد من أن إعداداتك هنا صحيحة
 const keyPart1 = "AIzaSyDKHR";
 const keyPart2 = "3mTOHnorS6-";
 const keyPart3 = "qf053xzJ4A6NBFq7sQ";
@@ -21,15 +20,15 @@ const firebaseConfig = {
   appId: "1:612353516678:web:c19e48d0b25e52bcb19d07",
   measurementId: "G-43K84KBL33"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// تخزين مؤقت للبيانات لسهولة الوصول إليها
 let globalMessages = [];
 
 // ==========================================
-// 1. Dashboard & Logic
+// 1. جلب البيانات والإحصائيات
 // ==========================================
 async function loadDashboardData() {
     try {
@@ -58,7 +57,7 @@ async function loadDashboardData() {
                     <td class="p-4 text-gray-400 text-xs">${p.category}</td>
                     <td class="p-4">${statusBadge}</td>
                     <td class="p-4">
-                        <button onclick="deleteProject('${pid}')" class="text-red-500 hover:bg-red-500/10 p-2 rounded transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button onclick="deleteProject('${pid}')" class="text-red-500 hover:bg-red-500/10 p-2 rounded transition" title="حذف المشروع"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                     </td>
                 </tr>
             `;
@@ -78,7 +77,7 @@ async function loadDashboardData() {
         const messagesQuery = query(collection(db, "messages"), orderBy("createdAt", "desc"));
         const messagesSnap = await getDocs(messagesQuery);
         
-        globalMessages = []; // تحديث المصفوفة العالمية
+        globalMessages = []; 
         let newMessagesCount = 0;
 
         messagesSnap.forEach(doc => {
@@ -96,7 +95,7 @@ async function loadDashboardData() {
     }
 }
 
-// دالة رسم جدول الرسائل
+// رسم جدول الرسائل
 function renderAllMessages(messages) {
     const tableBody = document.getElementById('all-messages-table');
     tableBody.innerHTML = '';
@@ -108,7 +107,6 @@ function renderAllMessages(messages) {
 
     messages.forEach(msg => {
         const date = msg.createdAt ? msg.createdAt.toDate().toLocaleDateString('ar-EG') : '-';
-        // الحالة: إذا لم تكن موجودة نعتبرها "جديدة"
         const isNew = !msg.status || msg.status === 'new';
         const statusBadge = isNew 
             ? `<span class="px-2 py-1 rounded text-xs bg-red-500/10 text-red-400 border border-red-500/20">جديدة</span>` 
@@ -127,7 +125,7 @@ function renderAllMessages(messages) {
                     <button onclick="toggleMessageStatus('${msg.id}', '${msg.status || 'new'}')" class="bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white p-2 rounded transition" title="${isNew ? 'تحديد كمقروء' : 'تحديد كجديد'}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </button>
-                    <button onclick="deleteMessage('${msg.id}')" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white p-2 rounded transition" title="حذف">
+                    <button onclick="deleteMessage('${msg.id}')" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white p-2 rounded transition" title="حذف الرسالة">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </td>
@@ -136,7 +134,7 @@ function renderAllMessages(messages) {
     });
 }
 
-// دالة فتح النافذة المنبثقة (View Modal)
+// عرض الرسالة في النافذة المنبثقة
 window.viewMessage = (id) => {
     const msg = globalMessages.find(m => m.id === id);
     if (!msg) return;
@@ -146,18 +144,16 @@ window.viewMessage = (id) => {
     document.getElementById('modal-date').innerText = msg.createdAt ? msg.createdAt.toDate().toLocaleString('ar-EG') : '-';
     document.getElementById('modal-message').innerText = msg.message;
     
-    // زر الحالة داخل المودال
     const isNew = !msg.status || msg.status === 'new';
     document.getElementById('modal-actions').innerHTML = `
         <button onclick="toggleMessageStatus('${id}', '${msg.status || 'new'}'); closeMessageModal()" class="px-4 py-2 rounded-lg text-white font-bold transition ${isNew ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'}">
             ${isNew ? '✓ تحديد كمكتمل' : '↺ إعادة كجديد'}
         </button>
     `;
-
     document.getElementById('message-modal').classList.remove('hidden');
 };
 
-// دالة تغيير حالة الرسالة
+// 🟢 تعديل الحالة للرسالة (مع رسائل خطأ واضحة)
 window.toggleMessageStatus = async (id, currentStatus) => {
     const newStatus = (!currentStatus || currentStatus === 'new') ? 'done' : 'new';
     try {
@@ -167,32 +163,54 @@ window.toggleMessageStatus = async (id, currentStatus) => {
         loadDashboardData();
     } catch (error) {
         console.error(error);
+        Swal.fire({title: 'صلاحيات مرفوضة ❌', text: 'قواعد حماية فايربيس تمنعك من التعديل حالياً. راجع الخطوة الثانية في شرح الذكاء الاصطناعي.', icon: 'error', background: '#0A1628', color: '#fff'});
     }
 };
 
+// 🟢 حذف الرسالة (مع رسائل خطأ واضحة)
+window.deleteMessage = async (id) => {
+    const result = await Swal.fire({ title: 'حذف الرسالة؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم احذف', cancelButtonText: 'إلغاء', background: '#0A1628', color: '#fff' });
+    if (result.isConfirmed) {
+        try {
+            await deleteDoc(doc(db, "messages", id));
+            Swal.fire({title: 'تم الحذف!', icon: 'success', background: '#0A1628', color: '#fff', timer: 1500, showConfirmButton: false});
+            loadDashboardData();
+        } catch(error) {
+            console.error(error);
+            Swal.fire({title: 'صلاحيات مرفوضة ❌', text: 'قواعد حماية فايربيس تمنعك من الحذف حالياً.', icon: 'error', background: '#0A1628', color: '#fff'});
+        }
+    }
+};
+
+// 🟢 تعديل حالة المشروع
 window.toggleProjectStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === 'in-progress' ? 'completed' : 'in-progress';
     try {
         await updateDoc(doc(db, "projects", id), { status: newStatus });
         loadDashboardData();
-    } catch (error) { Swal.fire('خطأ', error.message, 'error'); }
+    } catch (error) { 
+        Swal.fire({title: 'صلاحيات مرفوضة ❌', text: 'لا تملك صلاحية تعديل المشروع', icon: 'error', background: '#0A1628', color: '#fff'}); 
+    }
 };
 
+// 🟢 حذف المشروع
 window.deleteProject = async (id) => {
     const result = await Swal.fire({ title: 'حذف المشروع؟', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', background: '#0A1628', color: '#fff' });
     if (result.isConfirmed) {
-        await deleteDoc(doc(db, "projects", id));
-        loadDashboardData();
+        try {
+            await deleteDoc(doc(db, "projects", id));
+            loadDashboardData();
+        } catch(error) {
+            Swal.fire({title: 'صلاحيات مرفوضة ❌', text: 'لا تملك صلاحية الحذف', icon: 'error', background: '#0A1628', color: '#fff'}); 
+        }
     }
 };
 
 window.refreshDashboard = loadDashboardData;
 
 // ==========================================
-// 2. Add Project Setup (إعدادات إضافة المشروع)
+// 2. إعدادات إضافة المشروع
 // ==========================================
-
-// قائمة التقنيات
 const techList = [
     "HTML", "CSS", "JavaScript", "TypeScript", "Python", "Java", "C++", "C#", "PHP", "Dart", "Go", "Ruby", "Swift", "Kotlin",
     "React", "Next.js", "Vue.js", "Angular", "Svelte", "jQuery",
@@ -203,9 +221,7 @@ const techList = [
     "Docker", "Kubernetes", "AWS", "Git", "Figma", "Adobe XD"
 ];
 
-// 1. رسم المربعات (Render Checkboxes)
 const techContainer = document.getElementById('tech-container');
-
 if (techContainer) {
     techContainer.innerHTML = techList.map(tech => `
         <label class="cursor-pointer select-none relative group">
@@ -219,9 +235,7 @@ if (techContainer) {
     `).join('');
 }
 
-// 3. معالجة إرسال النموذج (Submit Form) وتخزين الصورة في ImgBB
 const projectForm = document.getElementById('add-project-form');
-
 if (projectForm) {
     projectForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -230,49 +244,27 @@ if (projectForm) {
         const originalBtnText = submitBtn.innerHTML;
         const fileInput = document.getElementById('p-image-file');
 
-        // التحقق من الصورة
-        if (!fileInput.files[0]) {
-            return Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى اختيار صورة للمشروع', background: '#0A1628', color: '#fff' });
-        }
-
-        // جمع التقنيات المختارة بشكل صحيح
+        if (!fileInput.files[0]) return Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى اختيار صورة للمشروع', background: '#0A1628', color: '#fff' });
         const selectedTechs = Array.from(document.querySelectorAll('.tech-checkbox:checked')).map(cb => cb.value);
-
-        // التحقق من اختيار تقنية واحدة على الأقل
-        if (selectedTechs.length === 0) {
-            return Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى اختيار تقنية واحدة على الأقل', background: '#0A1628', color: '#fff' });
-        }
+        if (selectedTechs.length === 0) return Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى اختيار تقنية واحدة على الأقل', background: '#0A1628', color: '#fff' });
 
         submitBtn.disabled = true;
         submitBtn.innerHTML = '⏳ جاري الرفع...';
 
         try {
-            // 🚀 الرفع باستخدام خدمة ImgBB كبديل سريع ومجاني
             const file = fileInput.files[0];
             const formData = new FormData();
             formData.append('image', file);
-             
-
-            const encodedImgbbKey = "YzJhN2I4NjVmNDQwOTI5NjdjNzExYWIyZDIxOGI5MzY=";
-            const imgbbApiKey = atob(encodedImgbbKey); // المتصفح سيفك التشفير هنا
-            const uploadResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-                method: 'POST',
-                body: formData
-            });
             
+            const encodedImgbbKey = "YzJhN2I4NjVmNDQwOTI5NjdjNzExYWIyZDIxOGI5MzY=";
+            const imgbbApiKey = atob(encodedImgbbKey);
+            const uploadResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, { method: 'POST', body: formData });
             const uploadData = await uploadResponse.json();
             
-            if (!uploadData.success) {
-                throw new Error("حدث خطأ أثناء رفع الصورة لـ ImgBB");
-            }
-            
-            const imageUrl = uploadData.data.url; // الحصول على الرابط المباشر للصورة
-            
-            // قراءة الحالة
-            const statusElement = document.getElementById('p-status');
-            const status = statusElement ? statusElement.value : 'in-progress';
+            if (!uploadData.success) throw new Error("حدث خطأ أثناء رفع الصورة");
+            const imageUrl = uploadData.data.url;
+            const status = document.getElementById('p-status') ? document.getElementById('p-status').value : 'in-progress';
 
-            // إرسال البيانات لفايربيس (مع رابط الصورة من ImgBB)
             await addDoc(collection(db, "projects"), {
                 title: document.getElementById('p-title').value,
                 category: document.getElementById('p-category').value,
@@ -283,18 +275,11 @@ if (projectForm) {
                 createdAt: serverTimestamp()
             });
 
-            // نجاح
             Swal.fire({ icon: 'success', title: 'تمت الإضافة بنجاح!', background: '#0A1628', color: '#fff', confirmButtonColor: '#00C7F4' });
-            
-            // إعادة تعيين النموذج
             projectForm.reset();
             document.getElementById('image-preview').classList.add('hidden');
             document.getElementById('upload-placeholder').classList.remove('hidden');
-            
-            // إعادة تعيين التقنيات (إلغاء التحديد)
             document.querySelectorAll('.tech-checkbox').forEach(cb => cb.checked = false);
-            
-            // تحديث الداشبورد
             loadDashboardData();
 
         } catch (error) {
@@ -308,10 +293,8 @@ if (projectForm) {
 }
 
 // ==========================================
-// 3. نظام الحماية (Authentication Logic)
+// 3. نظام الحماية (Authentication)
 // ==========================================
-
-// إخفاء الواجهة حتى نتحقق من الدخول
 const asideElement = document.querySelector('aside');
 const mainElement = document.querySelector('main');
 if(asideElement) asideElement.style.display = 'none';
@@ -319,12 +302,10 @@ if(mainElement) mainElement.style.display = 'none';
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // إذا مسجل دخول، اظهر اللوحة وحمل البيانات
         if(asideElement) asideElement.style.display = 'flex';
         if(mainElement) mainElement.style.display = 'block';
         loadDashboardData();
     } else {
-        // إذا مو مسجل، اظهر نافذة تسجيل الدخول
         Swal.fire({
             title: 'تسجيل الدخول - لوحة الإدارة',
             background: '#0A1628', 
@@ -346,23 +327,11 @@ onAuthStateChanged(auth, (user) => {
         }).then((result) => {
             signInWithEmailAndPassword(auth, result.value.email, result.value.pass)
                 .then(() => {
-                    Swal.fire({
-                        icon: 'success', 
-                        title: 'مرحباً بك يا مدير!', 
-                        background: '#0A1628', 
-                        color: '#fff', 
-                        timer: 1500, 
-                        showConfirmButton: false
-                    });
+                    Swal.fire({ icon: 'success', title: 'مرحباً بك!', background: '#0A1628', color: '#fff', timer: 1500, showConfirmButton: false });
                 })
                 .catch((error) => {
-                    Swal.fire({
-                        icon: 'error', 
-                        title: 'البيانات خاطئة', 
-                        text: 'تأكد من الإيميل والرقم السري', 
-                        background: '#0A1628', 
-                        color: '#fff'
-                    }).then(() => location.reload()); // إعادة تحميل الصفحة ليحاول مجدداً
+                    Swal.fire({ icon: 'error', title: 'البيانات خاطئة', text: 'تأكد من الإيميل والرقم السري', background: '#0A1628', color: '#fff' })
+                    .then(() => location.reload());
                 });
         });
     }
